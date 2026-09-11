@@ -1,0 +1,1 @@
+# script to read all the input files, run many sharc jobs, write the outputs
