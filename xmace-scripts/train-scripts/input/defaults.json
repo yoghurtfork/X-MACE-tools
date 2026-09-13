@@ -1,0 +1,30 @@
+{
+  "seed": 42,
+  "dtype": "float64",
+  "batch_size": 10,
+  "checkpoint_every": 10,
+  "data": {
+    "cutoff": 5.0,
+    "energy_key": "REF_energy",
+    "forces_key": "REF_forces",
+    "nacs_key": "REF_nacs",
+    "E0s": null
+  },
+  "model": {
+    "preset": "default_ani",
+    "compute_nacs": true,
+    "nac_num": 3,
+    "load_base": null
+  },
+  "loss": {
+    "energy_weight": 1.0,
+    "forces_weight": 1.0,
+    "nacs_weight": 1.0
+  },
+  "trainer": {
+    "device": "cpu",
+    "max_epochs": 100,
+    "optimiser_lr": 0.001,
+    "restore_best": true
+  }
+}

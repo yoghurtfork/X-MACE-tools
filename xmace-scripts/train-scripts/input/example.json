@@ -1,0 +1,12 @@
+{
+  "train_path": "../../data/train.xyz",
+  "valid_path": "../../data/valid.xyz",
+  "output_dir": "../../outputs/models/experiment_001/run_001",
+  "model": {
+    "latent_dim": 16,
+    "energy_decoder": "direct"
+  },
+  "trainer": {
+    "max_epochs": 150
+  }
+}

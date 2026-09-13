@@ -1,5 +1,22 @@
 # XMACE SCRIPTS 
 
+## Base model training
+
+With the local X-MACE package installed, run from this folder:
+
+```bash
+python train-scripts/base_model_trainer.py train-scripts/input/example.json
+```
+
+The script reads `train-scripts/input/defaults.json` and recursively applies the
+experiment JSON overrides. Data and output paths are relative to the experiment
+JSON, not the shell working directory. Update the example paths before running.
+
+This entrypoint trains a single-head model from scratch with energy, force, and
+raw NAC labels. It currently requires NAC prediction because the invariant loss
+expects smooth NAC tensors. The shared data builder computes smooth targets and
+reuses training metadata for validation.
+
 ## Overview
 This X-MACE scripts contains the main training scripts used to train and test the autoencoder model
 Main segments 
@@ -43,5 +60,3 @@ All preds output will be an extended xyz file, with reference and Preds present
 test_lifetime.py will be run in POST after predictions are done 
 IE it will read in the extended XYZ file and calculate lifetime based on that 
 Best called in notebook as a function 
-
-        
