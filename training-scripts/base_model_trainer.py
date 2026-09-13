@@ -1,1 +1,0 @@
-# minimum script to do a single base model training
