@@ -1,1 +1,0 @@
-# minimum script to run a single sharc
