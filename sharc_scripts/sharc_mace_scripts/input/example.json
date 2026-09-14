@@ -1,0 +1,11 @@
+{
+  "output_dir": "../output/run_000",
+  "initconds_file": "initconds.excited",
+  "mace":{
+    "model_file" : "for_sharc.pt"
+  },
+  "dynamics":{
+    "duration_fs": 1000.0,
+    "stepsize_fs": 0.5
+  }
+}
