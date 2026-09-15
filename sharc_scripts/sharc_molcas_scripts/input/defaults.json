@@ -1,0 +1,58 @@
+{
+  "output_dir": null,
+  "initconds_file": null,
+  
+  "molcas":{
+    "initial_orbitals_file": null,
+    "basis": "cc-pVDZ",
+    "method": "CASSCF",
+    "active_orbitals": 2,
+    "active_electrons": 2,
+    "inactive_orbitals": 7,
+    "state_averaging_roots": [3, 0, 0],
+    "use_douglas_kroll": false,
+    "use_cholesky": true
+  },
+
+  "molecule":{
+    "n_states": [3, 0, 0],
+    "active_states": [3, 0, 0],
+    "charge": [0, 0, 0],
+    "wavefunc_coeffs": "auto"
+  },
+
+  "dynamics":{
+    "method": "tsh",
+    "nuclear_integrator": "fvv",
+    "duration_fs": 200.0,
+    "stepsize_fs": 0.5,
+    "n_substeps": 25
+  },
+
+  "surface_hopping": {
+    "phases_from_interface": true,
+    "surface_representation": "diagonal",
+    "coupling": "nacdr",
+    "gradient_correction": true,
+    "kinetic_energy_correction": "parallel_nac",
+    "reflect_frustrated_hops": "none",
+    "decoherence_scheme": "edc",
+    "decoherence_param": 0.1,
+    "hopping_procedure": "sharc",
+    "calc_grads_for_all_states": true,
+    "calc_nacs_for_all_states": true,
+    "spin_orbit_coupling": false
+  },
+
+  "execution":{
+    "n_cpu_per_traj": 1,
+    "memory_mb_per_traj": 4000
+  },
+
+  "output": {
+    "format": "ascii",
+    "write_every_n_steps": 1,
+    "write_grads": true,
+    "write_nacs": true
+  }
+}

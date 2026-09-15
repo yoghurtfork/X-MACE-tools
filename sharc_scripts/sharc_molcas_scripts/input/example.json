@@ -1,0 +1,14 @@
+{
+  "output_dir": "../output/run_000",
+  "initconds_file": "initconds.excited",
+  "molcas":{
+    "initial_orbitals_file": "initial_orbitals/ethene.init"
+  },
+  "dynamics":{
+    "duration_fs": 1000.0,
+    "stepsize_fs": 0.5
+  },
+  "execution":{
+    "n_cpu_per_traj": 4
+  }
+}
