@@ -152,8 +152,13 @@ def main():
     qm_shared = output_dir / "QM_shared"
     qm_shared.mkdir(parents=True, exist_ok=True)
     (qm_shared / "MACE.template").write_text(
-        f"model_file {model_file}\nenergy_unit {mace['energy_unit']}\n"
-        f"distance_unit {mace['distance_unit']}\ndevice {mace['device']}\n", encoding="utf-8")
+        f"model_file {model_file}\ncutoff {mace['cutoff']}\n"
+        f"properties {' '.join(mace['properties'])}\n"
+        f"energy_unit {mace['energy_unit']}\ndistance_unit {mace['distance_unit']}\n"
+        f"device {mace['device']}\npaddingstates {mace['paddingstates']}\n"
+        + (f"head {mace['head']}\n" if mace["head"] is not None else ""),
+        encoding="utf-8",
+    )
     (qm_shared / "MACE.resources").write_text("", encoding="utf-8")
 
     # Prepare one trajectory folder (with geom, veloc, input files) per selected excited singlet state

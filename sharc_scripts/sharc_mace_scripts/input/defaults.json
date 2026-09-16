@@ -4,9 +4,13 @@
   
   "mace":{
     "model_file" : null,
+    "cutoff": 5.0,
+    "properties": ["energy", "forces", "nac"],
     "energy_unit": "eV",
     "distance_unit": "Ang",
-    "device": "cuda"
+    "device": "cuda",
+    "paddingstates": false,
+    "head": null
   },
 
   "molecule":{
