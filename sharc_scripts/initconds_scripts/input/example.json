@@ -1,0 +1,14 @@
+{
+  "input": {
+    "xyz": "grid_for_initconds.xyz"
+  },
+
+  "output": "../output/initconds.excited",
+
+  "initialise": {
+    "excite_to": "S1",
+    "velocity_mode": "maxwell_boltzmann",
+    "temp_K": 300.0,
+    "seed": 42
+  }
+}

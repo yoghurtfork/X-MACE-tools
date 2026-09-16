@@ -1,0 +1,16 @@
+{
+  "input": {
+    "xyz": null,
+    "ref_geom": 0,
+    "remove_ref_geom": false,
+    "energy_unit": "eV",
+    "distance_unit": "Ang"
+  },
+
+  "output": null,
+
+  "initialise": {
+    "excite_to": "S1",
+    "velocity_mode": "zero"
+  }
+}
