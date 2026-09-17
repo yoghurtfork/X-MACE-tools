@@ -13,8 +13,10 @@ import json
 import os
 import random
 import shutil
+import signal
 import subprocess
 import sys
+import time
 from copy import deepcopy
 from pathlib import Path
 
@@ -198,20 +200,64 @@ def main():
     if not trajectories:
         parser.error("no selected excited singlet states found in initconds_file")
 
-    # Run trajectories sequentially
+    max_concurrent = min(
+        execution["total_cpus"] // execution["n_cpu_per_traj"],
+        execution["total_memory_mb"] // execution["memory_mb_per_traj"],
+    )
+
+    # Run trajectories concurrently within the configured CPU and memory limits
+    pending = list(trajectories)
+    running = []
+    failures = []
+    completed = 0
     try:
-        for index, trajectory in enumerate(trajectories, start=1):
-            print(f"[{index}/{len(trajectories)}] Running {trajectory.relative_to(output_dir)}")
-            with (trajectory / "driver.log").open("w", encoding="utf-8") as log:
-                result = subprocess.run(
+        while pending or running:
+            while pending and len(running) < max_concurrent:
+                trajectory = pending.pop(0)
+                log = (trajectory / "driver.log").open("w", encoding="utf-8")
+                print(f"Running {trajectory.relative_to(output_dir)}")
+                process = subprocess.Popen(
                     [sys.executable, str(sharc_bin / "driver.py"), "-i", "molcas", "input"],
-                    cwd=trajectory, env=environment, stdout=log, stderr=subprocess.STDOUT)
-            if result.returncode:
-                print(f"SHARC failed for {trajectory}\nSee {trajectory / 'driver.log'}", file=sys.stderr)
-                return result.returncode
+                    cwd=trajectory, env=environment, stdout=log,
+                    stderr=subprocess.STDOUT, start_new_session=True)
+                running.append((process, trajectory, log))
+
+            for process, trajectory, log in running[:]:
+                returncode = process.poll()
+                if returncode is None:
+                    continue
+                log.close()
+                running.remove((process, trajectory, log))
+                completed += 1
+                print(f"[{completed}/{len(trajectories)}] Completed {trajectory.relative_to(output_dir)}")
+                if returncode:
+                    failures.append((trajectory, returncode))
+                    print(f"SHARC failed for {trajectory}\nSee {trajectory / 'driver.log'}", file=sys.stderr)
+
+            if running:
+                time.sleep(0.2)
     except KeyboardInterrupt:
         print("Interrupted.", file=sys.stderr)
+        for process, trajectory, log in running:
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+        for process, trajectory, log in running:
+            try:
+                process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.wait()
+            finally:
+                log.close()
         return 130
+    if failures:
+        print(f"{len(failures)} of {len(trajectories)} trajectories failed.", file=sys.stderr)
+        return 1
     print(f"Completed {len(trajectories)} trajectories in {output_dir}")
     return 0
 

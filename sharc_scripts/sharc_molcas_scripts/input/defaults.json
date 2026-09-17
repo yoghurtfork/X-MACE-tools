@@ -45,6 +45,8 @@
   },
 
   "execution":{
+    "total_cpus": 8,
+    "total_memory_mb": 32000,
     "n_cpu_per_traj": 1,
     "memory_mb_per_traj": 4000
   },
