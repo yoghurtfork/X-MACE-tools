@@ -12,8 +12,10 @@ import argparse
 import json
 import os
 import random
+import signal
 import subprocess
 import sys
+import time
 from copy import deepcopy
 from pathlib import Path
 
@@ -124,6 +126,7 @@ def main():
     defaults = json.loads(defaults_path.read_text(encoding="utf-8"))
     overrides = json.loads(input_path.read_text(encoding="utf-8"))
     config = merge_config(defaults, overrides)
+    gpus = config["execution"]["gpus"]
 
     # Resolve experiment paths relative to the input JSON
     initconds_path = (input_path.parent / Path(config["initconds_file"]).expanduser()).resolve()
@@ -179,20 +182,64 @@ def main():
     if not trajectories:
         parser.error("no selected excited singlet states found in initconds_file")
 
-    # Run trajectories sequentially
+    # Run trajectories concurrently, assigning one configured GPU to each active trajectory
+    pending = list(trajectories)
+    available_gpus = list(gpus)
+    running = []
+    failures = []
+    completed = 0
     try:
-        for index, trajectory in enumerate(trajectories, start=1):
-            print(f"[{index}/{len(trajectories)}] Running {trajectory.relative_to(output_dir)}")
-            with (trajectory / "driver.log").open("w", encoding="utf-8") as log:
-                result = subprocess.run(
+        while pending or running:
+            while pending and available_gpus:
+                trajectory = pending.pop(0)
+                gpu = available_gpus.pop(0)
+                trajectory_environment = environment.copy()
+                trajectory_environment["CUDA_VISIBLE_DEVICES"] = str(gpu)
+                log = (trajectory / "driver.log").open("w", encoding="utf-8")
+                print(f"Running {trajectory.relative_to(output_dir)} on GPU {gpu}")
+                process = subprocess.Popen(
                     [sys.executable, str(sharc_bin / "driver.py"), "-i", "mace", "input"],
-                    cwd=trajectory, env=environment, stdout=log, stderr=subprocess.STDOUT)
-            if result.returncode:
-                print(f"SHARC failed for {trajectory}\nSee {trajectory / 'driver.log'}", file=sys.stderr)
-                return result.returncode
+                    cwd=trajectory, env=trajectory_environment, stdout=log,
+                    stderr=subprocess.STDOUT, start_new_session=True)
+                running.append((process, trajectory, gpu, log))
+
+            for process, trajectory, gpu, log in running[:]:
+                returncode = process.poll()
+                if returncode is None:
+                    continue
+                log.close()
+                running.remove((process, trajectory, gpu, log))
+                available_gpus.append(gpu)
+                completed += 1
+                print(f"[{completed}/{len(trajectories)}] Completed {trajectory.relative_to(output_dir)} on GPU {gpu}")
+                if returncode:
+                    failures.append((trajectory, returncode))
+                    print(f"SHARC failed for {trajectory}\nSee {trajectory / 'driver.log'}", file=sys.stderr)
+
+            if running:
+                time.sleep(0.2)
     except KeyboardInterrupt:
         print("Interrupted.", file=sys.stderr)
+        for process, trajectory, gpu, log in running:
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+        for process, trajectory, gpu, log in running:
+            try:
+                process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.wait()
+            finally:
+                log.close()
         return 130
+    if failures:
+        print(f"{len(failures)} trajectory failures.", file=sys.stderr)
+        return 1
     print(f"Completed {len(trajectories)} trajectories in {output_dir}")
     return 0
 

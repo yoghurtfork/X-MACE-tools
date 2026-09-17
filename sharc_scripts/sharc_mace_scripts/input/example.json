@@ -7,5 +7,8 @@
   "dynamics":{
     "duration_fs": 1000.0,
     "stepsize_fs": 0.5
+  },
+  "execution": {
+    "gpus": [0,1,2,3]
   }
 }

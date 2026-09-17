@@ -39,6 +39,10 @@
     "calc_nacs_for_all_states": true,
     "spin_orbit_coupling": false
   },
+    
+  "execution": {
+    "gpus": [0]
+  },
 
   "output": {
     "format": "ascii",
