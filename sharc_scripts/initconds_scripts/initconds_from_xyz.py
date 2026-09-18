@@ -3,12 +3,6 @@
 Creates a SHARC initial conditions file from an extended XYZ file (must contain REF_energy)
 Reads in input JSON and defaults
 Outputs a initconds file
-
-ref_geom (0-based index) is the geometry it takes Eref from
-If remove_ref_geom, the ref geom won't be one of the initial geometries in the initconds file
-(useful if you want to use a relaxed geom as the ref geom)
-
-velocity_mode can be zero (all velocities set to zero) or maxwell_boltzmann (needs temp_K and seed)
 """
 
 import argparse
