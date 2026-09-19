@@ -1,3 +1,6 @@
+sharc_scripts/sharc_mace_scripts/output/ethene_01_dynamic_random/
+sharc_scripts/sharc_molcas_scripts/output/ethene_molcas_ktdc/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
