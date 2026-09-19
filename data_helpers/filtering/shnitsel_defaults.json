@@ -1,0 +1,15 @@
+{
+  "bond_length_limits_angstrom": {
+    "all_bonds": 3.0,
+    "overrides": {
+      "C-H": 2.0
+    }
+  },
+  "energy_limits_ev": {
+    "active_potential_step": 0.7,
+    "hop_potential_step": 1.0,
+    "total_energy_step": 0.1,
+    "total_energy_drift": 0.2,
+    "kinetic_energy_step": 0.7
+  }
+}
