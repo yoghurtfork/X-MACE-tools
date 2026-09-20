@@ -83,9 +83,9 @@ def calculate_cumulative_error(
     force_errors = np.asarray(force_errors)
     return {
         "time": np.asarray([frame.time_fs for frame in sharc_trajectory.frames[:common_length]]),
-        "energy_cumulative_error": np.cumsum(np.where(energy_errors >= min_energy_error, energy_errors, 0.0)),
-        "forces_cumulative_error": np.cumsum(np.where(force_errors >= min_force_error, force_errors, 0.0)),
-        "nacs_cumulative_error": None if min_nac_error is None else np.cumsum(np.where(np.asarray(nac_errors) >= min_nac_error, nac_errors, 0.0)),
+        "energy_cumulative_error": np.cumsum(np.maximum(energy_errors - min_energy_error, 0.0)),
+        "forces_cumulative_error": np.cumsum(np.maximum(force_errors - min_force_error, 0.0)),
+        "nacs_cumulative_error": None if min_nac_error is None else np.cumsum(np.maximum(np.asarray(nac_errors) - min_nac_error, 0.0)),
     }
 
 
