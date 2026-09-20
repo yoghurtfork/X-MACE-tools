@@ -5,7 +5,7 @@ at trajectory-level (from TRAJ folders) and ensemble-level (from ensemble root f
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import os
 from pathlib import Path
 import re
@@ -13,6 +13,7 @@ import sys
 
 from ase import Atoms
 from ase.units import Bohr, Hartree
+import numpy as np
 
 
 # One atomic unit of time in femtoseconds. SHARC writes ``dtstep`` in a.u.
@@ -29,6 +30,10 @@ class SharcFrame:
     kinetic_energy_ev: float
     potential_energy_ev: float
     total_energy_ev: float
+    ezero_ev: float = 0.0
+    energies_ev: dict[int, float] = field(default_factory=dict)
+    forces_ev_per_angstrom: dict[int, np.ndarray] | None = None
+    nacs_per_angstrom: dict[tuple[int, int], np.ndarray] | None = None
 
 
 @dataclass
@@ -54,6 +59,14 @@ def read_sharc_trajectory(
         return None
 
     current_step: int | None = None
+    ezero_ev = 0.0
+    input_path = path / "input"
+    if input_path.is_file():
+        for line in input_path.read_text(encoding="utf-8").splitlines():
+            fields = line.split()
+            if len(fields) >= 2 and fields[0].casefold() == "ezero":
+                ezero_ev = float(fields[1].replace("D", "E")) * Hartree
+                break
     try:
         with (path / "output.dat").open(encoding="utf-8") as handle:
             # Read the settings and element list preceding the first timestep.
@@ -110,6 +123,8 @@ def read_sharc_trajectory(
                 kinetic_energy: float | None = None
                 state: int | None = None
                 coordinates: list[list[float]] | None = None
+                gradients: dict[int, np.ndarray] = {}
+                nacs: dict[tuple[int, int], np.ndarray] = {}
                 next_step: int | None = None
 
                 for line in handle:
@@ -150,13 +165,26 @@ def read_sharc_trajectory(
                                 raise ValueError("incomplete geometry")
                             fields = coordinate_line.replace("D", "E").split()
                             coordinates.append([float(fields[0]), float(fields[1]), float(fields[2])])
+                    elif label.startswith("! 15 Gradients (MCH) State"):
+                        gradient_state = int(label.split()[-1])
+                        gradients[gradient_state] = _read_vector_block(
+                            handle, natom, "gradient"
+                        )
+                    elif label.startswith("! 16 NACdr matrix element (MCH)"):
+                        fields = label.split()
+                        pair = (int(fields[-2]), int(fields[-1]))
+                        nacs[pair] = _read_vector_block(handle, natom, "NACdr")
 
                 if hamiltonian is None or kinetic_energy is None or state is None or coordinates is None:
                     raise ValueError("incomplete timestep")
                 if not 1 <= state <= len(hamiltonian):
                     raise ValueError("active MCH state outside Hamiltonian")
 
-                potential_energy = hamiltonian[state - 1] * Hartree
+                energies_ev = {
+                    state_number: energy * Hartree
+                    for state_number, energy in enumerate(hamiltonian, start=1)
+                }
+                potential_energy = energies_ev[state]
                 kinetic_energy_ev = kinetic_energy * Hartree
                 # Convert to ASE/eV units and retain only the required frame data.
                 frames.append(
@@ -168,6 +196,18 @@ def read_sharc_trajectory(
                         kinetic_energy_ev=kinetic_energy_ev,
                         potential_energy_ev=potential_energy,
                         total_energy_ev=kinetic_energy_ev + potential_energy,
+                        ezero_ev=ezero_ev,
+                        energies_ev=energies_ev,
+                        forces_ev_per_angstrom=(
+                            {
+                                state_number: -gradient * Hartree / Bohr
+                                for state_number, gradient in gradients.items()
+                            }
+                            or None
+                        ),
+                        nacs_per_angstrom=(
+                            {pair: nac / Bohr for pair, nac in nacs.items()} or None
+                        ),
                     )
                 )
                 if maximum_time_fs is not None and abs(time_fs - maximum_time_fs) <= _CUTOFF_TOLERANCE_FS:
@@ -182,6 +222,23 @@ def read_sharc_trajectory(
         return None
 
     return SharcTrajectory(path=path, frames=frames)
+
+
+def _read_vector_block(handle, natom: int, label: str) -> np.ndarray:
+    """Read one SHARC Cartesian vector block in atomic units."""
+    rows: list[list[float]] = []
+    for _ in range(natom):
+        line = next((item for item in handle if item.strip()), None)
+        if line is None:
+            raise ValueError(f"incomplete {label} block")
+        fields = line.replace("D", "E").split()
+        if len(fields) != 3:
+            raise ValueError(f"invalid {label} vector")
+        rows.append([float(value) for value in fields])
+    vector = np.asarray(rows, dtype=float)
+    if vector.shape != (natom, 3):
+        raise ValueError(f"invalid {label} shape")
+    return vector
 
 
 def read_sharc_ensemble(
