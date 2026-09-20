@@ -1,27 +1,28 @@
-"""Plot hop geometries in a trajectory"""
-
-from pathlib import Path
-import sys
+"""Plot hop geometries in a SHARC trajectory or ensemble."""
 
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
-from parse_sharc_output import SharcTrajectory
+from sharc_scripts.tools.parse_sharc_output import SharcEnsemble, SharcTrajectory
 
 
 def plot_hop_geoms(
-    trajectory: SharcTrajectory,
+    trajectory: SharcTrajectory | SharcEnsemble,
     bond_length_indices: tuple[int, int],
     dihedral_indices: tuple[int, int, int, int],
 ) -> tuple[Figure, Axes]:
     bond_indices_zero_based = tuple(index - 1 for index in bond_length_indices)
     dihedral_indices_zero_based = tuple(index - 1 for index in dihedral_indices)
+    trajectories = (
+        trajectory.trajectories
+        if isinstance(trajectory, SharcEnsemble)
+        else [trajectory]
+    )
     hops = [
         (previous.state, current.state, current)
-        for previous, current in zip(trajectory.frames, trajectory.frames[1:])
+        for item in trajectories
+        for previous, current in zip(item.frames, item.frames[1:])
         if previous.state != current.state
     ]
 
