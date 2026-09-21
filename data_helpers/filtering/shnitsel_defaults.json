@@ -2,7 +2,8 @@
   "bond_length_limits_angstrom": {
     "all_bonds": 3.0,
     "overrides": {
-      "C-H": 2.0
+      "C-H": 2.0,
+      "N-H": 2.0
     }
   },
   "energy_limits_ev": {
