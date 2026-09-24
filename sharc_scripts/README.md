@@ -191,7 +191,7 @@ The full analysis suites can be run directly from the notebooks, but the functio
 
 - Filters it using filter settings in JSON file, reports failed filter criteria
 
-- Plots bond lengths against time and 2D plot
+- Plots energy, bond lengths against time and 2D plot
 
 - Plots hop geometries
 
@@ -223,7 +223,7 @@ The full analysis suites can be run directly from the notebooks, but the functio
 
 - Filters all trajectories in the ensemble using filter settings, and reports the filter times
 
-- Plots quantum yield and state populations against time
+- Plots energy, quantum yield, and state populations against time
 
 - Plots hop geometries
 
