@@ -11,7 +11,7 @@ import numpy as np
 from ase.io import read, write
 from scipy.stats import qmc
 
-from data_helpers.generation.grid.make_geometry import make_geometry
+from data_helpers.generation.make_geometry import make_geometry
 
 
 def main() -> None:

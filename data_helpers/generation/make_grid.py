@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 from ase.io import read, write
 
-from data_helpers.generation.grid.make_geometry import make_geometry
+from data_helpers.generation.make_geometry import make_geometry
 
 
 def main() -> None:
