@@ -55,7 +55,7 @@ def plot_energy_scatter(atoms_list, x_coordinate, y_coordinate, cmap="viridis"):
             alpha=0.75,
             edgecolors="none",
         )
-        fig.colorbar(points, ax=axis, label="Energy")
+        fig.colorbar(points, ax=axis, label="Energy (eV)")
     return fig, ax
 
 
@@ -88,5 +88,5 @@ def plot_energy_mesh_triangulate(
         surface = axis.tripcolor(
             triangulation, mean_energies[:, state], cmap=cmap, shading=shading
         )
-        fig.colorbar(surface, ax=axis, label="Energy")
+        fig.colorbar(surface, ax=axis, label="Energy (eV)")
     return fig, ax
