@@ -54,7 +54,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--initialize",
-        type=str,
+        type=int,
         default=0,
         help="For FPS selector: initial geometry (default: 0)",
     )

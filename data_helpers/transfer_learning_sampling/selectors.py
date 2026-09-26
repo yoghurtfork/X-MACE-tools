@@ -27,7 +27,7 @@ def random_sampling(
 def farthest_point_sampling(
     descriptor_matrix: np.ndarray,
     n_samples: int,
-    initialize: int | str = 0,
+    initialize: int = 0,
 ) -> np.ndarray:
     """Start with one geometry, then repeatedly select the geometry whose nearest selected neighbour is as far away as possible"""
     selector = FPS(n_to_select=n_samples, initialize=initialize)
