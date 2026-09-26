@@ -1,1 +1,0 @@
-# plots the bar graph comparing the MAE of different models
