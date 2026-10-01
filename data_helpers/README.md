@@ -16,7 +16,7 @@ These are helpers to generate the xyz geometries used in training
 
     `angle` is the side group angle (eg C-N=N angle for azobenzene)
 
-    `angle` is the side group twist (eg the rotation of the phenyl group about the C-N bond)
+    `twist` is the side group twist (eg the rotation of the phenyl group about the C-N bond)
 
     `--angle-symmetric` and `--twist-symmetric` make both left and right angles/twists the same
 
