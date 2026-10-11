@@ -1,0 +1,62 @@
+{
+  "seed": 42,
+  "dtype": "float32",
+  "batch_size": 10,
+  "valid_fraction": 0.2,
+  "data": {
+    "cutoff": 5.0,
+    "energy_key": "REF_energy",
+    "energy_difference_key": "REF_raw_energy_differences",
+    "forces_key": "REF_forces",
+    "nacs_key": "REF_nacs",
+    "E0s": null,
+    "energy_difference_references": null
+  },
+  "model": {
+    "preset": "lightweight",
+    "compute_nacs": true,
+    "latent_dim": 16,
+    "num_bessel": null,
+    "num_polynomial_cutoff": null,
+    "max_ell": null,
+    "num_interactions": null,
+    "hidden_irreps": null,
+    "mlp_irreps": null,
+    "correlation": null,
+    "gate": null,
+    "interaction": null,
+    "interaction_first": null,
+    "radial_mlp": null,
+    "radial_type": null,
+    "distance_transform": null,
+    "pair_repulsion": null,
+    "load_base": null,
+    "energy_decoder": "direct"
+  },
+  "loss": {
+    "energy_weight": 1.0,
+    "forces_weight": 1.0,
+    "dipoles_weight": 0.0,
+    "nacs_weight": 1.0,
+    "socs_weight": 0.0
+  },
+  "trainer": {
+    "max_epochs": 20,
+    "device": "cpu",
+    "verbose": true,
+    "optimiser_lr": 0.001,
+    "optimiser_weight_decay": 0.0001,
+    "max_grad_norm": 10.0,
+    "scheduler_lr_factor": 0.8,
+    "scheduler_patience": 50,
+    "ema_decay": 0.99,
+    "early_stopping": true,
+    "stopping_patience": 2048,
+    "restore_best": true,
+    "gradient_accumulation_steps": 1
+  },
+  "checkpoint_every": 10,
+  "train_path": "/Users/naythanyeo/Documents/Research/2026/MLIP/X-MACE-tools/xmace_scripts/data/A01_ethene_grid_static_CASSCF_101_grid.xyz",
+  "output_dir": "/Users/naythanyeo/Documents/Research/2026/MLIP/X-MACE-tools/xmace_scripts/outputs/base_000",
+  "valid_path": null
+}

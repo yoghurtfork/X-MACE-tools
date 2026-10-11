@@ -1,7 +1,8 @@
 {
   "seed": 42,
-  "dtype": "float64",
+  "dtype": "float32",
   "batch_size": 10,
+  "valid_fraction": 0.2,
   "data": {
     "cutoff": 5.0,
     "energy_key": "REF_energy",
@@ -44,7 +45,7 @@
     "device": "auto",
     "verbose": true,
     "optimiser_lr": 0.001,
-    "optimiser_weight_decay": 5e-07,
+    "optimiser_weight_decay": 1e-04,
     "max_grad_norm": 10.0,
     "scheduler_lr_factor": 0.8,
     "scheduler_patience": 50,

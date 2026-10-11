@@ -1,0 +1,15 @@
+{
+  "train_path": "../data/A01_ethene_grid_static_CASSCF_101_grid.xyz",
+  "valid_fraction": 0.2,
+  "output_dir": "../outputs/base_000/",
+  "model": {
+    "preset": "lightweight",
+    "latent_dim": 16,
+    "load_base": null,
+    "energy_decoder": "direct"
+  },
+  "trainer": {
+    "max_epochs": 20,
+    "device": "cpu"
+  }
+}
