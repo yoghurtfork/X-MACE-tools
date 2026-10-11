@@ -7,7 +7,7 @@ In general, the default.json contains all the default parameters for training,
 each dictionary key contains the arguments for each of the moudles in the training pipeline.
 To run individual experiments or runs, modify the input.json to override the defaults 
 The overwritten updated parameters will then be parsed into the training pipeline 
-Each input.json must additionally also contain the paths to the training and validation data,
+Each input.json must contain a training path and either a validation path or validation fraction,
 as well as the output directory to save the trained model and checkpoints. 
 """
 
@@ -20,7 +20,7 @@ import numpy as np
 import torch
 from ase.io import read
 
-from utils import merge_config
+from utils import merge_config, split_atoms
 
 from mace.data.atom_data_loader import AtomDataLoaderBuilder
 from mace.modules.loss import InvariantsWeightedEnergyForcesNacsDipoleLoss
@@ -44,11 +44,28 @@ def main():
     if config["trainer"]["device"] == "auto":
         config["trainer"]["device"] = "cuda" if torch.cuda.is_available() else "cpu"
 
-    # Resolve user paths relative to the directory where the command is run.
+    # Either specify the validation path of xyz files or specify a validation fraction
+    valid_path_value = config.get("valid_path")
+    valid_fraction = config.get("valid_fraction")
+    if (valid_path_value is None) == (valid_fraction is None):
+        raise ValueError("Specify exactly one of valid_path or valid_fraction.")
+    if valid_path_value is not None:
+        if not isinstance(valid_path_value, str) or not valid_path_value.strip():
+            raise ValueError("valid_path must be a nonempty file path.")
+
+    # Resolve paths relative to the directory where the command is run.
     train_path = Path(config["train_path"]).expanduser().resolve()
-    valid_path = Path(config["valid_path"]).expanduser().resolve()
+    valid_path = (
+        Path(valid_path_value).expanduser().resolve()
+        if valid_path_value is not None else None
+    )
     output_dir = Path(config["output_dir"]).expanduser().resolve()
-    config.update(train_path=str(train_path), valid_path=str(valid_path), output_dir=str(output_dir))
+    config.update(
+        train_path=str(train_path),
+        valid_path=str(valid_path) if valid_path is not None else None,
+        valid_fraction=valid_fraction,
+        output_dir=str(output_dir),
+    )
 
     # For foundation model, normalise and resolve if a path is provided 
     load_base = config["model"].get("load_base")
@@ -70,10 +87,30 @@ def main():
     torch.manual_seed(seed)
     torch.set_default_dtype(getattr(torch, config["dtype"]))
 
-    # Reuse the training metadata, including E0s, for validation.
-    builder = AtomDataLoaderBuilder(**config["data"])
+    # Read the source dataset, then choose the validation mode.
     train_atoms = read(str(train_path), index=":")
-    valid_atoms = read(str(valid_path), index=":")
+    split_record = None
+    if valid_path is not None:
+        valid_atoms = read(str(valid_path), index=":")
+    else:
+        train_atoms, valid_atoms, train_indices, valid_indices = split_atoms(
+            train_atoms, valid_fraction, seed
+        )
+        # Save the train_indices and valid_indices for reproducibility 
+        split_record = {
+            "source_path": str(train_path),
+            "seed": seed,
+            "valid_fraction": valid_fraction,
+            "num_frames": len(train_indices) + len(valid_indices),
+            "train_indices": train_indices,
+            "valid_indices": valid_indices,
+        }
+
+    print(f"Training geometries: {len(train_atoms)}")
+    print(f"Validation geometries: {len(valid_atoms)}")
+
+    # Build metadata from training only, then reuse it for validation.
+    builder = AtomDataLoaderBuilder(**config["data"])
     train_loader = builder.load(
         train_atoms, batch_size=config["batch_size"], shuffle=True, seed=seed
     )
@@ -91,6 +128,8 @@ def main():
     (output_dir / "input.json").write_text(input_path.read_text())
     (output_dir / "resolved_config.json").write_text(json.dumps(config, indent=2))
     torch.save(metadata, output_dir / "metadata.pt")
+    if split_record is not None:
+        (output_dir / "split.json").write_text(json.dumps(split_record, indent=2))
 
     # The trainer handles optimisation, validation, EMA, and checkpoints.
     model, history = trainer.train_model(
