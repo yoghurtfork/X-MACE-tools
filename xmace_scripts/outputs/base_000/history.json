@@ -178,11 +178,11 @@
   "checkpoint_models": [
     {
       "epoch": 10,
-      "path": "/Users/naythanyeo/Documents/Research/2026/MLIP/X-MACE-tools/xmace_scripts/outputs/base_000/checkpoints/checkpoint_epoch_000010.pt"
+      "path": "/Users/naythanyeo/Documents/Research/2026/MLIP/X-MACE-tools/xmace_scripts/outputs/base_000/models/checkpoints/checkpoint_epoch_000010.pt"
     },
     {
       "epoch": 20,
-      "path": "/Users/naythanyeo/Documents/Research/2026/MLIP/X-MACE-tools/xmace_scripts/outputs/base_000/checkpoints/checkpoint_epoch_000020.pt"
+      "path": "/Users/naythanyeo/Documents/Research/2026/MLIP/X-MACE-tools/xmace_scripts/outputs/base_000/models/checkpoints/checkpoint_epoch_000020.pt"
     }
   ],
   "train_loss_breakdown": [

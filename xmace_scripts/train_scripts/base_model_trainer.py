@@ -124,12 +124,16 @@ def main():
     loss_fn = loss_fn.to(trainer.device)
 
     # Record inputs before training starts; never overwrite an existing run.
-    output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "input.json").write_text(input_path.read_text())
-    (output_dir / "resolved_config.json").write_text(json.dumps(config, indent=2))
-    torch.save(metadata, output_dir / "metadata.pt")
+    models_dir = output_dir / "models"
+    inputs_dir = output_dir / "input"
+    preds_dir = output_dir / "preds"
+    for directory in (models_dir, inputs_dir, preds_dir):
+        directory.mkdir(parents=True, exist_ok=True)
+    (inputs_dir / "input.json").write_text(input_path.read_text())
+    (inputs_dir / "resolved_config.json").write_text(json.dumps(config, indent=2))
+    torch.save(metadata, models_dir / "metadata.pt")
     if split_record is not None:
-        (output_dir / "split.json").write_text(json.dumps(split_record, indent=2))
+        (inputs_dir / "split.json").write_text(json.dumps(split_record, indent=2))
 
     # The trainer handles optimisation, validation, EMA, and checkpoints.
     model, history = trainer.train_model(
@@ -138,16 +142,16 @@ def main():
         valid_loader,
         loss_fn,
         checkpoint_epoch=config["checkpoint_every"],
-        checkpoint_models_dir=output_dir / "checkpoints",
+        checkpoint_models_dir=models_dir / "checkpoints",
         compute_nacs=config["model"]["compute_nacs"],
     )
 
     # Save the best or final model to the output directory
     model_filename = "best_model.pt" if trainer.restore_best else "final_model.pt"
-    torch.save(model, output_dir / model_filename)
+    torch.save(model, models_dir / model_filename)
     (output_dir / "history.json").write_text(json.dumps(history, indent=2))
     print(f"Best epoch: {history['best_epoch']}")
-    print(f"Model saved to: {output_dir / model_filename}")
+    print(f"Model saved to: {models_dir / model_filename}")
 
 
 if __name__ == "__main__":
