@@ -1,0 +1,15 @@
+{
+  "device": "auto",
+  "batch_size": 10,
+  "compute_nacs": true,
+  "models": {
+    "best": true,
+    "final": false,
+    "checkpoints": []
+  },
+  "labels": {
+    "energy_key": "REF_energy",
+    "forces_key": "REF_forces",
+    "nacs_key": "REF_nacs"
+  }
+}

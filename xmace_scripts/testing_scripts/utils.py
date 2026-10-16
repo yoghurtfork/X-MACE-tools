@@ -51,7 +51,7 @@ def load_models(run_dir, selection):
         weights = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
         # Copy over checkpoint weights and set model to eval mode 
         model.load_state_dict(weights, strict=True)
-        models[path.stem] = model.eval()
+        models[checkpoint_path.stem] = model.eval()
 
     if not models:
         raise ValueError("No models or checkpoints selected.")
