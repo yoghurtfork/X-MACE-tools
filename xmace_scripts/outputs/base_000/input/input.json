@@ -1,5 +1,5 @@
 {
-  "train_path": "../data/A01_ethene_grid_static_CASSCF_101_grid.xyz",
+  "train_path": "../data/A01_ethene_dynamic_CASSCF_sanity_defaults_filtered_first_7400.xyz",
   "valid_fraction": 0.2,
   "output_dir": "../outputs/base_000/",
   "model": {
