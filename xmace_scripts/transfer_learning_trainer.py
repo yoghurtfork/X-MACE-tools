@@ -6,6 +6,7 @@ and a full model; this starts a new optimisation run, not an exact resumption.
 Expansion strategies expect a single-head base model and should precede freezing
 or LoRA. Correction expansion currently requires three states and latent size 16;
 its head order defines cumulative routes and successive energy-difference targets.
+For data without NAC labels, set compute_nacs to false and loss.nacs_weight to zero.
 """
 
 import argparse
@@ -54,10 +55,9 @@ def main():
     np.random.seed(seed)
     torch.manual_seed(seed)
 
-    # Load in the base model, and get its dtype, cutoff, and compute_nacs flag for later use
+    # Load the base model and reuse its dtype and cutoff.
     base_model = torch.load(base_model_path, map_location="cpu", weights_only=False)
     model_dtype = next(base_model.parameters()).dtype
-    model_compute_nacs = base_model.compute_nacs
     model_cutoff = float(base_model.r_max)
     torch.set_default_dtype(model_dtype)
 
@@ -172,7 +172,7 @@ def main():
     model, history = trainer.train_model(
         model, train_loader, valid_loader, loss_fn,
         checkpoint_epoch=config["checkpoint_every"],
-        checkpoint_models_dir=models_dir / "checkpoints", compute_nacs=model_compute_nacs,
+        checkpoint_models_dir=models_dir / "checkpoints", compute_nacs=config["compute_nacs"],
     )
     model_filename = "best_model.pt" if trainer.restore_best else "final_model.pt"
     torch.save(model, models_dir / model_filename)

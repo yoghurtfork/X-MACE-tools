@@ -1,5 +1,6 @@
 {
   "seed": 42,
+  "compute_nacs": true,
   "batch_size": 10,
   "valid_fraction": null,
   "data": {
