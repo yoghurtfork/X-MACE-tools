@@ -103,8 +103,28 @@ def main():
                 "train_indices": train_indices, "valid_indices": valid_indices,
             }
 
-    # TBC E0s
-    builder = AtomDataLoaderBuilder(cutoff=model_cutoff, **config["data"])
+    # For single head models, if E0s are not specified, we use the base models ones
+    # For multi head models, E0s are different, so if unspecified, we will parse in None
+    # ie the E0s will be calculated from the dataset instead 
+    data_settings = deepcopy(config["data"])
+    # Checks if multihead strategy is being done 
+    expands_heads = any(
+        settings["type"] in ("multihead", "multihead_correction")
+        for settings in config["strategies"]
+    )
+    # If no E0s specified and single head training, then get E0s from base model
+    if data_settings["E0s"] is None and not expands_heads:
+        atomic_numbers = base_model.atomic_numbers.tolist()
+        atomic_energies = (
+            base_model.atomic_energies_fn.atomic_energies[0]
+            .detach().cpu().tolist()
+        )
+        data_settings["E0s"] = {
+            chemical_symbols[z]: value
+            for z, value in zip(atomic_numbers, atomic_energies)
+        }
+
+    builder = AtomDataLoaderBuilder(cutoff=model_cutoff, **data_settings)
     train_loader = builder.load(
         train_atoms, batch_size=config["batch_size"], shuffle=True,
         seed=seed, balance_heads=config["balance_heads"],
@@ -137,6 +157,7 @@ def main():
     loss_fn = InvariantsWeightedEnergyForcesNacsDipoleLoss(**config["loss"]).to(trainer.device)
 
     # Record the starting model, resolved settings, and target-training metadata.
+    output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=False)
     models_dir = output_dir / "models"
     inputs_dir = output_dir / "input"
