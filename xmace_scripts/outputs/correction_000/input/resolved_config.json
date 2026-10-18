@@ -1,0 +1,58 @@
+{
+  "seed": 42,
+  "compute_nacs": false,
+  "batch_size": 10,
+  "valid_fraction": 0.2,
+  "data": {
+    "energy_key": "REF_energy",
+    "energy_difference_key": "REF_raw_energy_differences",
+    "forces_key": "REF_forces",
+    "nacs_key": "REF_nacs",
+    "E0s": null,
+    "energy_difference_references": {
+      "LF": null,
+      "HF": "LF"
+    }
+  },
+  "loss": {
+    "energy_weight": 1.0,
+    "forces_weight": 1.0,
+    "dipoles_weight": 0.0,
+    "nacs_weight": 0.0,
+    "socs_weight": 0.0
+  },
+  "trainer": {
+    "max_epochs": 20,
+    "device": "cpu",
+    "verbose": true,
+    "optimiser_lr": 0.0001,
+    "optimiser_weight_decay": 0.0001,
+    "max_grad_norm": 10.0,
+    "scheduler_lr_factor": 0.8,
+    "scheduler_patience": 50,
+    "ema_decay": 0.99,
+    "early_stopping": true,
+    "stopping_patience": 2048,
+    "restore_best": true,
+    "gradient_accumulation_steps": 1
+  },
+  "checkpoint_every": 10,
+  "balance_heads": false,
+  "strategies": [
+    {
+      "type": "multihead_correction",
+      "gnn_lr": 0.01,
+      "head_multipliers": {
+        "LF": 0.01,
+        "HF": 1.0
+      }
+    }
+  ],
+  "base_model_path": "/Users/naythanyeo/Documents/Research/2026/MLIP/X-MACE-tools/xmace_scripts/outputs/base_000/models/best_model.pt",
+  "train_path": {
+    "LF": "/Users/naythanyeo/Documents/Research/2026/MLIP/X-MACE-tools/xmace_scripts/data/A01_ethene_offgrid_CASSCF.xyz",
+    "HF": "/Users/naythanyeo/Documents/Research/2026/MLIP/X-MACE-tools/xmace_scripts/data/A01_ethene_offgrid_NEVPT2_with_differences.xyz"
+  },
+  "output_dir": "/Users/naythanyeo/Documents/Research/2026/MLIP/X-MACE-tools/xmace_scripts/outputs/correction_000",
+  "valid_path": null
+}

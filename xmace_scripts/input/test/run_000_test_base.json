@@ -1,4 +1,5 @@
 {
+  "run_dir": "outputs/base_000",
   "models": {
     "best": true,
     "final": false,
