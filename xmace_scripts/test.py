@@ -1,6 +1,6 @@
 """Test selected models against named datasets and save predictions and MAEs.
 
-Run from xmace_scripts: python test.py input/test/ethene.json outputs/base_000
+Run from xmace_scripts: python test.py input/test/ethene.json
 User paths are relative to the working directory. Selected tests always rerun
 and replace their outputs. Do not run concurrent tests against the same destinations.
 Errors stop execution and display Python's traceback.
@@ -28,7 +28,6 @@ else:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=Path, help="Test settings JSON")
-    parser.add_argument("run_dir", type=Path, help="Run directory containing models/ and preds/")
     args = parser.parse_args()
 
     # Read the experiment settings and shared defaults.
@@ -43,7 +42,7 @@ def main():
         config["device"] = "cuda" if torch.cuda.is_available() else "cpu"
 
     # Resolve relative paths to absolute paths
-    run_dir = args.run_dir.expanduser().resolve()
+    run_dir = Path(config["run_dir"]).expanduser().resolve()
     for dataset in config["datasets"].values():
         dataset["path"] = Path(dataset["path"]).expanduser().resolve()
 
