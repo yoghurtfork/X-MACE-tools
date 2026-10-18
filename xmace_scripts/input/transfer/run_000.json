@@ -1,0 +1,14 @@
+{
+  "base_model_path": "outputs/base_000/models/best_model.pt",
+  "train_path": "data/target.xyz",
+  "valid_fraction": 0.2,
+  "output_dir": "outputs/transfer_000",
+  "strategies": [
+    {
+      "type": "freeze",
+      "frozen_layers": [
+        "full_graph"
+      ]
+    }
+  ]
+}

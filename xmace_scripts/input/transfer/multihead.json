@@ -1,0 +1,33 @@
+{
+  "base_model_path": "outputs/base_000/models/best_model.pt",
+  "train_path": {
+    "LF": "data/lf_train.xyz",
+    "MF": "data/mf_train.xyz",
+    "HF": "data/hf_train.xyz"
+  },
+  "valid_path": {
+    "LF": "data/lf_valid.xyz",
+    "MF": "data/mf_valid.xyz",
+    "HF": "data/hf_valid.xyz"
+  },
+  "output_dir": "outputs/multihead_000",
+  "strategies": [
+    {
+      "type": "multihead",
+      "gnn_lr": 0.01,
+      "head_multipliers": {
+        "LF": 0.01,
+        "MF": 1.0,
+        "HF": 1.0
+      }
+    },
+    {
+      "type": "lora",
+      "rank": 4,
+      "alpha": 1.0,
+      "lora_layers": [
+        "decoder"
+      ]
+    }
+  ]
+}
