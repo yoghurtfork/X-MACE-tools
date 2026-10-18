@@ -1,8 +1,12 @@
 {
   "base_model_path": "outputs/base_000/models/best_model.pt",
-  "train_path": "data/target.xyz",
+  "train_path": "data/A01_ethene_offgrid_NEVPT2.xyz",
   "valid_fraction": 0.2,
   "output_dir": "outputs/transfer_000",
+  "compute_nacs": false,
+  "loss": {
+    "nacs_weight": 0.0
+  },
   "strategies": [
     {
       "type": "freeze",
@@ -10,5 +14,8 @@
         "full_graph"
       ]
     }
-  ]
+  ],
+  "trainer": {
+    "max_epochs": 20
+  }
 }
