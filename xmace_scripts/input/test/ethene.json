@@ -1,0 +1,15 @@
+{
+  "models": {
+    "best": true,
+    "final": false,
+    "checkpoints": [10]
+  },
+  "datasets": {
+    "static": {
+      "path": "data/A01_ethene_grid_static_CASSCF_101_grid.xyz"
+    },
+    "dynamic": {
+      "path": "data/A01_ethene_dynamic_CASSCF_custom_test_set.xyz"
+    }
+  }
+}

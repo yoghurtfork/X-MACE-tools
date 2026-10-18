@@ -35,7 +35,7 @@ def main():
     args = parser.parse_args()
 
     input_path = args.input.expanduser().resolve()
-    defaults_path = Path(__file__).resolve().parent / "input" / "defaults.json"
+    defaults_path = Path(__file__).resolve().parent / "input" / "base" / "defaults.json"
     overrides = json.loads(input_path.read_text())
     defaults = json.loads(defaults_path.read_text())
     config = merge_config(defaults, overrides)

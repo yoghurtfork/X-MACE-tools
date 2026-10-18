@@ -1,6 +1,6 @@
 """Test selected models against named datasets and save predictions and MAEs.
 
-Run from testing_scripts: python test.py input/ethene.json ../outputs/base_000
+Run from xmace_scripts: python test.py input/test/ethene.json outputs/base_000
 User paths are relative to the working directory. Selected tests always rerun
 and replace their outputs. Do not run concurrent tests against the same destinations.
 Errors stop execution and display Python's traceback.
@@ -33,7 +33,7 @@ def main():
 
     # Read the experiment settings and shared defaults.
     input_path = args.input.expanduser().resolve()
-    defaults_path = Path(__file__).resolve().parent / "input" / "defaults.json"
+    defaults_path = Path(__file__).resolve().parent / "input" / "test" / "defaults.json"
     overrides = json.loads(input_path.read_text())
     defaults = json.loads(defaults_path.read_text())
     config = merge_config(defaults, overrides)
