@@ -2,6 +2,32 @@
 
 Tools for the X-MACE project!
 
+## Set up
+
+**1. Clone X-MACE-tools**
+
+```bash
+git clone https://github.com/yoghurtfork/X-MACE-tools.git
+cd X-MACE-tools
+```
+
+**2. Create and activate the environment**
+
+```bash
+conda env create -f environemnt.yml
+conda activate xmace-tl-env
+```
+
+**3. Clone and install X-MACE-TL**
+Left as an editable install for potential changes to the source code. 
+
+```bash
+cd ..
+git clone https://github.com/naythanyeo/X-MACE-TL.git
+cd X-MACE-TL
+python -m pip install -e .
+```
+
 ## Data helpers
 
 This directory helps to prepare molecular datasets for X-MACE workflows
