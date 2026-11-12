@@ -11,6 +11,8 @@
 
   "initialise": {
     "excite_to": "S1",
-    "velocity_mode": "zero"
+    "velocity_mode": "zero",
+    "temp_K": 300.0,
+    "seed": 42
   }
 }

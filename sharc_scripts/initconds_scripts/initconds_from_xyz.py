@@ -7,25 +7,20 @@ Outputs a initconds file
 
 import argparse
 import json
-from copy import deepcopy
+import sys
 from pathlib import Path
+
+if __package__:
+    from ..utils import merge_config
+else:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from utils import merge_config
 
 import numpy as np
 from ase import units
 from ase.data import atomic_masses
 from ase.io import read
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution, Stationary, ZeroRotation
-
-
-def merge_config(defaults, overrides):
-    """Merges settings in input JSON and defaults recursively"""
-    config = deepcopy(defaults)
-    for key, value in overrides.items():
-        if isinstance(value, dict) and isinstance(config.get(key), dict):
-            config[key] = merge_config(config[key], value)
-        else:
-            config[key] = deepcopy(value)
-    return config
 
 
 def write_geom_coords(output, atoms, distance_unit: str) -> None:

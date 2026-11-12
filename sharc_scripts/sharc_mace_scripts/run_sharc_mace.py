@@ -16,21 +16,16 @@ import signal
 import subprocess
 import sys
 import time
-from copy import deepcopy
 from pathlib import Path
+
+if __package__:
+    from ..utils import merge_config
+else:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from utils import merge_config
 
 # This is used to initialise the rng that generates rngseed values for each trajectory
 RNG_SEED = 42
-
-def merge_config(defaults, overrides):
-    """Merges settings in input JSON and defaults recursively"""
-    config = deepcopy(defaults)
-    for key, value in overrides.items():
-        if isinstance(value, dict) and isinstance(config.get(key), dict):
-            config[key] = merge_config(config[key], value)
-        else:
-            config[key] = deepcopy(value)
-    return config
 
 
 def parse_initconds(path: Path) -> tuple[float, list[tuple[list[str], list[int]]]]:
