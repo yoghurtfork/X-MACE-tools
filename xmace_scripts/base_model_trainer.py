@@ -38,7 +38,9 @@ def main():
     defaults_path = Path(__file__).resolve().parent / "input" / "base" / "defaults.json"
     overrides = json.loads(input_path.read_text())
     defaults = json.loads(defaults_path.read_text())
-    config = merge_config(defaults, overrides)
+    config = merge_config(
+        defaults, overrides, run_only_keys=("train_path", "valid_path", "output_dir")
+    )
 
     # Resolve automatic device selection before constructing Trainer or saving settings.
     if config["trainer"]["device"] == "auto":

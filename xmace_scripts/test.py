@@ -35,7 +35,7 @@ def main():
     defaults_path = Path(__file__).resolve().parent / "input" / "test" / "defaults.json"
     overrides = json.loads(input_path.read_text())
     defaults = json.loads(defaults_path.read_text())
-    config = merge_config(defaults, overrides)
+    config = merge_config(defaults, overrides, run_only_keys=("run_dir", "datasets"))
 
     # Resolve automatic device selection before constructing Tester.
     if config["device"] == "auto":
