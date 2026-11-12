@@ -40,7 +40,11 @@ def main():
     args = parser.parse_args()
     input_path = args.input.expanduser().resolve()
     defaults_path = Path(__file__).resolve().parent / "input" / "transfer" / "defaults.json"
-    config = merge_config(json.loads(defaults_path.read_text()), json.loads(input_path.read_text()))
+    config = merge_config(
+        json.loads(defaults_path.read_text()),
+        json.loads(input_path.read_text()),
+        run_only_keys=("base_model_path", "train_path", "valid_path", "output_dir"),
+    )
 
     if config["trainer"]["device"] == "auto":
         config["trainer"]["device"] = "cuda" if torch.cuda.is_available() else "cpu"
