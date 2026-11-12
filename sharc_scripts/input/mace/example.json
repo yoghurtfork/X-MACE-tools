@@ -1,8 +1,8 @@
 {
-  "output_dir": "../output/run_000",
-  "initconds_file": "initconds.excited",
+  "output_dir": "output/mace/run_000",
+  "initconds_file": "output/initconds.excited",
   "mace":{
-    "model_file" : "for_sharc.pt"
+    "model_file" : "input/mace/for_sharc.pt"
   },
   "dynamics":{
     "duration_fs": 1000.0,

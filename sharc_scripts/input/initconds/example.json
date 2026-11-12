@@ -1,9 +1,9 @@
 {
   "input": {
-    "xyz": "grid_for_initconds.xyz"
+    "xyz": "input/initconds/grid_for_initconds.xyz"
   },
 
-  "output": "../output/initconds.excited",
+  "output": "output/initconds.excited",
 
   "initialise": {
     "excite_to": "S1",

@@ -4,9 +4,33 @@ SHARC itself runs from a separate program, but the scripts here help to prepare 
 
 Using input JSONs makes it easier to prep and run many reproducible SHARC jobs
 
+Run the commands below from `sharc_scripts/`:
+
+```bash
+cd sharc_scripts
+```
+
+```text
+sharc_scripts/
+├── initconds_from_xyz.py
+├── run_sharc_mace.py
+├── run_sharc_molcas.py
+├── run_sharc_queue.py
+├── SHARC_MACE.py
+├── utils.py
+├── input/
+│   ├── initconds/
+│   ├── mace/
+│   └── molcas/
+├── tools/
+└── README.md
+```
+
+Each input folder contains `defaults.json` and `example.json`. Supply your own XYZ, model, and initial-condition files at the example paths, or edit those paths. The example initial-orbital file is included under `input/molcas/initial_orbitals/`.
+
 ### Notes on the input JSONs
 
-- All file paths are resolved relative to the input JSONs
+- All user file paths are resolved relative to the terminal's working directory. Absolute paths and `~` are also supported. Existing JSON-relative paths must be updated before reusing older inputs.
 
 - All the configurable keys are listed in the respective `defaults.json`
 
@@ -27,7 +51,7 @@ Using input JSONs makes it easier to prep and run many reproducible SHARC jobs
 2. Run
 
     ```bash
-    python initconds_from_xyz.py input.json
+    python initconds_from_xyz.py input/initconds/example.json
     ```
 
 ### Notes on the input keys
@@ -56,7 +80,7 @@ Using input JSONs makes it easier to prep and run many reproducible SHARC jobs
 
 1. Install SHARC and set the environment variable `SHARC` to the installation `bin`
 
-2. Copy `sharc_mace_scripts/SHARC_MACE.py` into `bin`
+2. Copy `SHARC_MACE.py` into `bin`
 
     We've edited this, this is not the same as `SHARC_MACE.py` in the original X-MACE repo
 
@@ -67,7 +91,7 @@ Using input JSONs makes it easier to prep and run many reproducible SHARC jobs
 4. Run
 
     ```bash
-    python run_sharc_mace.py input.json
+    python run_sharc_mace.py input/mace/example.json
     ```
 
 ### Notes on the input keys
@@ -101,14 +125,14 @@ Using input JSONs makes it easier to prep and run many reproducible SHARC jobs
 4. Run
 
     ```bash
-    python run_sharc_molcas.py input.json
+    python run_sharc_molcas.py input/molcas/example.json
     ```
 
 ### Notes on the input keys
 
 - `initial_orbitals_file`: the initial RasOrb wavefunction file
 
-    Examples can be found in `input/initial_orbitals/`
+    Examples can be found in `input/molcas/initial_orbitals/`
 
     To create a new one, run OpenMolcas single-point calculation on the relaxed geometry using OpenMolcas's `molcas_input.py`
 

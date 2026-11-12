@@ -7,14 +7,9 @@ Outputs a initconds file
 
 import argparse
 import json
-import sys
 from pathlib import Path
 
-if __package__:
-    from ..utils import merge_config
-else:
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-    from utils import merge_config
+from utils import merge_config
 
 import numpy as np
 from ase import units
@@ -78,13 +73,13 @@ def main():
     parser.add_argument("input", type=Path, help="JSON configuration file")
     args = parser.parse_args()
     input_path = args.input.expanduser().resolve()
-    defaults_path = Path(__file__).resolve().parent / "input" / "defaults.json"
+    defaults_path = Path(__file__).resolve().parent / "input" / "initconds" / "defaults.json"
     config = merge_config(
         json.loads(defaults_path.read_text(encoding="utf-8")),
         json.loads(input_path.read_text(encoding="utf-8")),
     )
 
-    xyz_path = (input_path.parent / Path(config["input"]["xyz"]).expanduser()).resolve()
+    xyz_path = Path(config["input"]["xyz"]).expanduser().resolve()
     frames = list(read(xyz_path, index=":"))
 
     # Set velocities to zeros or use maxwell distribution
@@ -112,7 +107,8 @@ def main():
     ]
 
     output_path = config["output"] or "initconds.excited"
-    output_path = (input_path.parent / Path(output_path).expanduser()).resolve()
+    output_path = Path(output_path).expanduser().resolve()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Write initconds file
     with output_path.open("w", encoding="utf-8") as output:

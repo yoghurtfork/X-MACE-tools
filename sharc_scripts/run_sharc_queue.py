@@ -11,8 +11,8 @@ from pathlib import Path
 def main():
     runners_dir = Path(__file__).resolve().parent
     runners = {
-        "mace": runners_dir / "sharc_mace_scripts" / "run_sharc_mace.py",
-        "molcas": runners_dir / "sharc_molcas_scripts" / "run_sharc_molcas.py",
+        "mace": runners_dir / "run_sharc_mace.py",
+        "molcas": runners_dir / "run_sharc_molcas.py",
     }
 
     mode = None

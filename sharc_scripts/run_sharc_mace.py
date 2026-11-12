@@ -5,7 +5,7 @@ Reads in input JSON and defaults
 Outputs a folder of trajectories
 
 Input JSON requires initconds file, so before running this,
-prepare initconds using initconds_scripts/
+prepare initconds using initconds_from_xyz.py
 """
 
 import argparse
@@ -18,11 +18,7 @@ import sys
 import time
 from pathlib import Path
 
-if __package__:
-    from ..utils import merge_config
-else:
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-    from utils import merge_config
+from utils import merge_config
 
 # This is used to initialise the rng that generates rngseed values for each trajectory
 RNG_SEED = 42
@@ -115,7 +111,7 @@ def main():
     parser.add_argument("input", type=Path, help="JSON configuration file")
     args = parser.parse_args()
     input_path = args.input.expanduser().resolve()
-    defaults_path = Path(__file__).resolve().parent / "input" / "defaults.json"
+    defaults_path = Path(__file__).resolve().parent / "input" / "mace" / "defaults.json"
     if not input_path.is_file():
         parser.error(f"configuration file does not exist: {input_path}")
     defaults = json.loads(defaults_path.read_text(encoding="utf-8"))
@@ -123,11 +119,11 @@ def main():
     config = merge_config(defaults, overrides)
     gpus = config["execution"]["gpus"]
 
-    # Resolve experiment paths relative to the input JSON
-    initconds_path = (input_path.parent / Path(config["initconds_file"]).expanduser()).resolve()
-    output_dir = (input_path.parent / Path(config["output_dir"]).expanduser()).resolve()
+    # Resolve experiment paths relative to the working directory
+    initconds_path = Path(config["initconds_file"]).expanduser().resolve()
+    output_dir = Path(config["output_dir"]).expanduser().resolve()
     mace = config["mace"]
-    model_file = (input_path.parent / Path(mace["model_file"]).expanduser()).resolve()
+    model_file = Path(mace["model_file"]).expanduser().resolve()
     if not initconds_path.is_file():
         parser.error(f"initconds_file does not exist: {initconds_path}")
     if not model_file.is_file():
